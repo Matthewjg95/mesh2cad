@@ -1,0 +1,23 @@
+# Core geometry stack
+numpy>=1.26
+scipy>=1.11
+trimesh>=4.0
+networkx>=3.0
+
+# Optional accelerators for trimesh (embree raycasts, convex hulls)
+rtree>=1.1
+shapely>=2.0
+
+# CAD kernel (OpenCascade bindings)
+cadquery-ocp>=7.7
+
+# Point cloud / registration utilities (OPTIONAL — guarded imports)
+# open3d>=0.18
+
+# GUI
+PySide6>=6.6
+pyqtgraph>=0.13
+PyOpenGL>=3.1
+
+# Testing
+pytest>=8.0
