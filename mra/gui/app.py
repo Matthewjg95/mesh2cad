@@ -109,6 +109,7 @@ class MainWindow(QMainWindow):
         self._build = None
         self._btn_reconstruct.setEnabled(False)
         self._btn_sheet.setEnabled(False)
+        self._btn_report.setEnabled(False)
         self._btn_validate.setEnabled(False)
         self._btn_export.setEnabled(False)
         self._viewport.clear()
@@ -117,6 +118,7 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"Loaded {path}")
         self._btn_repair.setEnabled(True)
         self._btn_recognize.setEnabled(True)
+        self._btn_report.setEnabled(True)
         if len(self._bodies) > 1:
             self.isolate_body()
 
@@ -205,6 +207,7 @@ class MainWindow(QMainWindow):
         self._btn_recognize.setEnabled(True)
         self._btn_reconstruct.setEnabled(True)
         self._btn_sheet.setEnabled(True)
+        self._btn_report.setEnabled(True)
 
     def _on_recognition_failed(self, tb: str) -> None:
         print(tb, file=sys.stderr)
@@ -319,6 +322,84 @@ class MainWindow(QMainWindow):
             intent.features[:] = [
                 f for f in intent.features if f not in removed
             ]
+
+    def report_part(self) -> None:
+        """Package this part + analysis into a shareable repro bundle."""
+        if self._mesh is None:
+            return
+        from PySide6.QtWidgets import (
+            QComboBox, QDialog, QDialogButtonBox, QFormLayout,
+            QPlainTextEdit,
+        )
+        from mra.diagnostics import ReproReport, build_repro_bundle
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Report Part")
+        form = QFormLayout(dlg)
+        part_class = QComboBox()
+        part_class.addItems([
+            "unknown", "plate/backplate", "bracket", "enclosure/housing",
+            "cover/lid", "adapter/spacer", "heat sink", "other",
+        ])
+        stage = QComboBox()
+        stage.addItems([
+            "none / it worked", "import/repair", "recognize",
+            "reconstruct", "sheet", "validate/export",
+        ])
+        expected = QPlainTextEdit()
+        expected.setPlaceholderText("What did you expect?")
+        expected.setMaximumHeight(60)
+        actual = QPlainTextEdit()
+        actual.setPlaceholderText("What actually happened?")
+        actual.setMaximumHeight(60)
+        notes = QPlainTextEdit()
+        notes.setPlaceholderText("Anything else…")
+        notes.setMaximumHeight(60)
+        form.addRow("Part class", part_class)
+        form.addRow("Stage wrong", stage)
+        form.addRow("Expected", expected)
+        form.addRow("Actual", actual)
+        form.addRow("Notes", notes)
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Save
+            | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dlg.accept)
+        buttons.rejected.connect(dlg.reject)
+        form.addRow(buttons)
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Save repro bundle", "mesh2cad_report.zip",
+            "Zip (*.zip)"
+        )
+        if not path:
+            return
+        report = ReproReport(
+            user_notes=notes.toPlainText(),
+            part_class=part_class.currentText(),
+            stage_where_wrong=stage.currentText(),
+            expected=expected.toPlainText(),
+            actual=actual.toPlainText(),
+        )
+        try:
+            out = build_repro_bundle(
+                path, self._mesh, report,
+                self._segmentation, self._intent, self._build,
+            )
+        except Exception as exc:
+            traceback.print_exc()
+            QMessageBox.critical(self, "Report Part failed", str(exc))
+            return
+        box = QMessageBox(self)
+        box.setWindowTitle("Repro bundle saved")
+        box.setText(
+            f"Saved {out.name}.\n\nAttach it to a new issue at\n"
+            "github.com/Matthewjg95/mesh2cad/issues/new/choose\n\n"
+            "(Nothing was uploaded — the file is on your disk.)"
+        )
+        box.exec()
 
     def build_sheet_version(self) -> None:
         """Build a flat sheet-metal version (laser/waterjet cuttable)."""
@@ -475,9 +556,17 @@ class MainWindow(QMainWindow):
         self._btn_export = _btn(
             "Export STEP", self.export_step_file, enabled=False
         )
+        self._btn_report = _btn(
+            "Report Part", self.report_part, enabled=False
+        )
+        self._btn_report.setToolTip(
+            "Package this part + the tool's analysis into a zip you can "
+            "attach to a GitHub issue (nothing is uploaded)"
+        )
         for b in (self._btn_import, self._btn_isolate, self._btn_repair,
                   self._btn_recognize, self._btn_reconstruct,
-                  self._btn_sheet, self._btn_validate, self._btn_export):
+                  self._btn_sheet, self._btn_validate, self._btn_export,
+                  self._btn_report):
             bar.addWidget(b)
 
 

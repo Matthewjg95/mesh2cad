@@ -1,0 +1,45 @@
+name: Part submission (it worked!)
+description: Share a part that reconstructed well — grows the test corpus and helps everyone.
+title: "[part] "
+labels: ["part-submission", "corpus"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Successful parts are just as valuable as broken ones — each one
+        becomes a regression fixture so the tool never *breaks* your part
+        class in a future change. Attach the repro bundle and a photo if you
+        have the physical part.
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Repro bundle (.zip from "Report Part")
+      placeholder: Drop the zip here...
+    validations:
+      required: true
+  - type: dropdown
+    id: part_class
+    attributes:
+      label: Part class
+      options:
+        - Plate / backplate
+        - Bracket
+        - Enclosure / housing
+        - Cover / lid
+        - Adapter / spacer
+        - Heat sink
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: made
+    attributes:
+      label: Did you get it made? Where / material / cost?
+      placeholder: "SendCutSend, 6061 .080in sheet, $12"
+  - type: checkboxes
+    id: license
+    attributes:
+      label: Sharing
+      options:
+        - label: I have the right to share this geometry and license it under the repo's MIT terms for use as a test fixture.
+          required: true

@@ -1,0 +1,67 @@
+name: Reconstruction issue
+description: A part didn't reconstruct correctly — spokes, missing holes, wrong walls, etc.
+title: "[recon] "
+labels: ["reconstruction", "needs-repro"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for feeding the beast. The fastest fixes come from a **repro
+        bundle**: in the app, run your part, then click **Report Part**. It
+        writes a `.zip` (your mesh + the tool's own analysis). Drag that zip
+        into the box below and we can reproduce your exact result.
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Repro bundle (drag the .zip here)
+      description: From the app's "Report Part" button. Contains mesh.stl + report.json.
+      placeholder: Drop the zip file here...
+    validations:
+      required: false
+  - type: dropdown
+    id: part_class
+    attributes:
+      label: Part class
+      options:
+        - Plate / backplate
+        - Bracket
+        - Enclosure / housing
+        - Cover / lid
+        - Adapter / spacer
+        - Heat sink
+        - Other / not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Which stage went wrong?
+      options:
+        - Import / Repair
+        - Recognize Features
+        - Reconstruct CAD
+        - Sheet Version
+        - Validate / Export
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect vs. what happened?
+      placeholder: |
+        Expected: four round M3 holes in the corners.
+        Actual: two holes filled in, two came out square.
+    validations:
+      required: true
+  - type: textarea
+    id: images
+    attributes:
+      label: Screenshots (optional but great)
+      description: The GUI viewport and/or the STEP in your CAD/SendCutSend.
+  - type: input
+    id: version
+    attributes:
+      label: mesh2cad version
+      description: Shown in the window title.
+      placeholder: "0.1.0"

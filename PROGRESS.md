@@ -437,6 +437,36 @@ User goal: CNC-machinable CAD of the Tab5 backplate.
   M3 inserts (schedule carries positions); that's inherent to the
   flat-sheet tradeoff, not a bug.
 
+### Open-sourced as mesh2cad (2026-07-12)
+- Sheet parts ordered: 6061 T6 .080" $12.05 + 5052 H32 .080" $10.47,
+  total $32.21 shipped, arriving ~Jul 16 (vs $1,188 machined quote).
+- PUBLIC REPO: https://github.com/Matthewjg95/mesh2cad (MIT).
+  Published as a FRESH single-commit snapshot: tool code + tests +
+  PROGRESS only. m5tabsolidworks/, m5tabsolidworks.zip, references/
+  EXCLUDED (M5Stack-derived geometry; user chose to keep private) and
+  are in the public .gitignore.
+- THIS local repo remains the private working repo with full history
+  incl. part files. TO RELEASE UPDATES to the public repo: re-copy the
+  tree (minus .git/.venv/m5tabsolidworks*/references/.claude) into a
+  clone of mesh2cad, commit, push — or set up a sanitized branch later.
+  NEVER push local history to the public remote (it contains the part
+  files in history).
+
+### Community data pipeline (2026-07-12)
+- Vision: crowd-sourced parts (mesh + tool analysis + user verdict) become
+  a regression corpus AND training data for the roadmap AI module.
+- [x] mra/diagnostics.py — ReproReport + build_repro_bundle(): writes a
+  zip (mesh.stl + versioned report.json + report.md) capturing mesh
+  stats, recognition (patch counts/coverage/confidence/low-conf list),
+  intent (feature counts, wall, symmetry, questions, hole Øs), build
+  (log, validation, volume error). schema_version=1. Nothing uploaded.
+- [x] GUI "Report Part" button (enabled after import): verdict dialog ->
+  save zip -> points to issues/new/choose.
+- [x] .github/ISSUE_TEMPLATE/ forms (reconstruction-issue.yml,
+  part-submission.yml, config.yml) that ask for the bundle; CONTRIBUTING.md.
+- [x] tests/test_diagnostics.py. FULL SUITE 88/88.
+- Backplate bundle verified: 313 patches, all features, 1 solid 0.46%.
+
 ### NEXT STEP (future sessions)
 0a. PyInstaller single-folder .exe distribution (user wants a real
     executable; OCP+PySide6 bundling is finicky — budget a session).

@@ -4,7 +4,6 @@ __pycache__/
 .pytest_cache/
 
 
-# Local part files (M5Stack-derived geometry stays out of the public repo)
 m5tabsolidworks/
 m5tabsolidworks.zip
 references/

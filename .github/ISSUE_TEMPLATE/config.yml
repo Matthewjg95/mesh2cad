@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question / idea
+    url: https://github.com/Matthewjg95/mesh2cad/discussions
+    about: For usage questions and feature ideas, start a discussion.
