@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import pytest
 import trimesh
+import numpy as np
 
 from mra.optimization import (
+    IntentParameterBinding,
     OptimizationConfig,
     ParameterSpec,
+    apply_intent_parameters,
     refine_parameters,
+    result_to_dict,
     score_meshes,
 )
+from mra.core import Confidence, Feature, FeatureType
+from mra.intent import IntentResult
 
 
 def _box(values):
@@ -82,3 +88,53 @@ def test_invalid_candidates_are_logged_and_rejected() -> None:
     )
     assert result.best_parameters["width"] <= 9.0
     assert any(not trial.valid for trial in result.trials)
+
+
+def test_intent_binding_copies_and_updates_scalar_and_vector() -> None:
+    intent = IntentResult(features=[Feature(
+        feature_id=7,
+        feature_type=FeatureType.EXTRUSION,
+        params={"height": 3.0, "origin": np.array([1.0, 2.0, 3.0])},
+        confidence=Confidence(0.9),
+    )])
+    bindings = [
+        IntentParameterBinding("height", 7, "height", 1.0, 8.0, 0.5),
+        IntentParameterBinding("origin_x", 7, "origin", -5.0, 5.0, 0.25,
+                               index=0),
+    ]
+    candidate = apply_intent_parameters(
+        intent, bindings, {"height": 4.5, "origin_x": -2.0}
+    )
+    assert intent.features[0].params["height"] == 3.0
+    assert intent.features[0].params["origin"][0] == 1.0
+    assert candidate.features[0].params["height"] == 4.5
+    assert candidate.features[0].params["origin"][0] == -2.0
+
+
+def test_locked_intent_binding_rejects_change() -> None:
+    intent = IntentResult(features=[Feature(
+        feature_id=2,
+        feature_type=FeatureType.HOLE,
+        params={"diameter": 3.2},
+    )])
+    binding = IntentParameterBinding(
+        "diameter", 2, "diameter", 2.0, 5.0, 0.1, locked=True
+    )
+    with pytest.raises(ValueError, match="locked"):
+        apply_intent_parameters(intent, [binding], {"diameter": 3.3})
+
+
+def test_result_report_is_machine_readable() -> None:
+    source = trimesh.creation.box(extents=(10.0, 20.0, 4.0))
+    result = refine_parameters(
+        source,
+        [ParameterSpec("width", 8.0, 6.0, 12.0, 1.0)],
+        lambda values: trimesh.creation.box(
+            extents=(values["width"], 20.0, 4.0)
+        ),
+        config=OptimizationConfig(sample_count=128, max_passes=2),
+    )
+    report = result_to_dict(result)
+    assert report["schema_version"] == 1
+    assert report["trials"][0]["accepted"]
+    assert report["best_score"]["loss"] <= report["initial_score"]["loss"]
