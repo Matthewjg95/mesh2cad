@@ -16,14 +16,17 @@ from mra.optimization.bounded import (
 from mra.optimization.metrics import GeometricScore, score_meshes
 from mra.optimization.intent_adapter import (
     IntentParameterBinding,
+    IntentRefinementResult,
     apply_intent_parameters,
     make_occ_candidate_builder,
+    refine_intent_parameters,
 )
 from mra.optimization.reporting import result_to_dict, write_result_report
 
 __all__ = [
     "GeometricScore",
     "IntentParameterBinding",
+    "IntentRefinementResult",
     "OptimizationConfig",
     "OptimizationResult",
     "ParameterSpec",
@@ -31,6 +34,7 @@ __all__ = [
     "apply_intent_parameters",
     "make_occ_candidate_builder",
     "refine_parameters",
+    "refine_intent_parameters",
     "result_to_dict",
     "score_meshes",
     "write_result_report",
