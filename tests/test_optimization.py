@@ -11,6 +11,7 @@ from mra.optimization import (
     OptimizationConfig,
     ParameterSpec,
     apply_intent_parameters,
+    refine_intent_parameters,
     refine_parameters,
     result_to_dict,
     score_meshes,
@@ -138,3 +139,32 @@ def test_result_report_is_machine_readable() -> None:
     assert report["schema_version"] == 1
     assert report["trials"][0]["accepted"]
     assert report["best_score"]["loss"] <= report["initial_score"]["loss"]
+
+
+def test_end_to_end_intent_refinement_returns_a_new_best_intent() -> None:
+    source = trimesh.creation.box(extents=(10.0, 20.0, 4.0))
+    intent = IntentResult(features=[Feature(
+        feature_id=11,
+        feature_type=FeatureType.EXTRUSION,
+        params={"width": 8.0},
+    )])
+    binding = IntentParameterBinding(
+        "width", 11, "width", 6.0, 12.0, 1.0
+    )
+    outcome = refine_intent_parameters(
+        source,
+        segmentation=None,
+        original_intent=intent,
+        bindings=[binding],
+        candidate_builder=lambda values: trimesh.creation.box(
+            extents=(values["width"], 20.0, 4.0)
+        ),
+        config=OptimizationConfig(sample_count=256, max_passes=5),
+    )
+    assert intent.features[0].params["width"] == 8.0
+    assert outcome.best_intent is not intent
+    assert outcome.best_intent.features[0].params["width"] == pytest.approx(
+        10.0, abs=0.51
+    )
+    assert outcome.optimization.best_score.loss \
+        < outcome.optimization.initial_score.loss
