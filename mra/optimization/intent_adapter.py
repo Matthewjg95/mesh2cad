@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass
-from typing import Mapping
+from typing import TYPE_CHECKING, Callable, Mapping
 
 import numpy as np
 import trimesh
@@ -12,6 +12,9 @@ import trimesh
 from mra.core import Tolerances
 from mra.intent import IntentResult
 from mra.recognition import SegmentationResult
+
+if TYPE_CHECKING:
+    from mra.optimization.bounded import OptimizationConfig, OptimizationResult
 
 
 @dataclass(frozen=True)
@@ -68,6 +71,14 @@ class IntentParameterBinding:
         )
 
 
+@dataclass(frozen=True)
+class IntentRefinementResult:
+    """Search history plus the independently copied best intent model."""
+
+    optimization: OptimizationResult
+    best_intent: IntentResult
+
+
 def _feature(intent: IntentResult, feature_id: int):
     matches = [f for f in intent.features if f.feature_id == feature_id]
     if len(matches) != 1:
@@ -120,7 +131,7 @@ def apply_intent_parameters(
 
 def make_occ_candidate_builder(
     source_mesh: trimesh.Trimesh,
-    segmentation: SegmentationResult,
+    segmentation: SegmentationResult | None,
     original_intent: IntentResult,
     bindings: list[IntentParameterBinding],
     tol: Tolerances | None = None,
@@ -152,3 +163,44 @@ def make_occ_candidate_builder(
         return candidate
 
     return build
+
+
+def refine_intent_parameters(
+    source_mesh: trimesh.Trimesh,
+    segmentation: SegmentationResult,
+    original_intent: IntentResult,
+    bindings: list[IntentParameterBinding],
+    *,
+    tol: Tolerances | None = None,
+    config: OptimizationConfig | None = None,
+    candidate_builder: Callable[[Mapping[str, float]], trimesh.Trimesh]
+    | None = None,
+) -> IntentRefinementResult:
+    """Run bounded refinement and return a new best intent model.
+
+    ``candidate_builder`` is an explicit seam for alternate CAD backends and
+    headless tests.  When omitted, candidates are rebuilt and validated with
+    Mesh2CAD's current OCC pipeline.
+    """
+    if not bindings:
+        raise ValueError("at least one intent parameter binding is required")
+    from mra.optimization.bounded import refine_parameters
+
+    if candidate_builder is None:
+        if segmentation is None:
+            raise ValueError("segmentation is required for the OCC builder")
+        builder = make_occ_candidate_builder(
+            source_mesh, segmentation, original_intent, bindings, tol
+        )
+    else:
+        builder = candidate_builder
+    optimization = refine_parameters(
+        source_mesh,
+        [binding.as_parameter_spec(original_intent) for binding in bindings],
+        builder,
+        config=config,
+    )
+    best_intent = apply_intent_parameters(
+        original_intent, bindings, optimization.best_parameters
+    )
+    return IntentRefinementResult(optimization, best_intent)
