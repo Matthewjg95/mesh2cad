@@ -1,0 +1,28 @@
+name: Intent contract tests
+
+on:
+  pull_request:
+    paths:
+      - "mra/intent/contract.py"
+      - "mra/intent/__init__.py"
+      - "tests/test_intent_contract.py"
+      - ".github/workflows/intent-contract-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install narrow test dependencies
+        run: python -m pip install pytest numpy scipy trimesh networkx
+      - name: Run intent-contract tests
+        run: python -m pytest -q tests/test_intent_contract.py
