@@ -175,3 +175,70 @@ Treat photo reconstruction first as evidence labeling. Produce a correctable map
 4. E4 photo primitive map.
 
 E1 establishes the feedback loop. E3 makes it portable. E2 expands from continuous parameter tuning to discrete feature edits. E4 brings imperfect photographic evidence into the same workflow without coupling Mesh2CAD to a particular image model.
+
+
+## 2026-08-28 research increment
+
+This increment adds the strongest practical findings from the current geometry-reconstruction brief and maps them onto the existing experiments.
+
+### CADIR — stable construction graphs and geometric signatures
+
+Reference: [CADIR](https://arxiv.org/abs/2608.00891) and its Apache-2.0 [SimpleCADAPI artifact](https://github.com/NiJingzhe/SimpleCADAPI).
+
+CADIR reinforces two additions to the versioned intent contract:
+
+- explicit operation dependencies rather than a flat feature list;
+- topology references backed by geometric signatures so a face or edge can be reidentified after a parameter change or backend replay.
+
+New experiment: rebuild a synthetic bracket at two parameter sets and measure whether every referenced face/edge can be reconnected without relying on transient OCC entity order.
+
+### CADFit — spatial residual decomposition
+
+CADFit's most useful next step beyond bounded parameter tuning is its separation of positive and negative residual material.
+
+Extend E2 to:
+
+1. voxelize or otherwise classify target-versus-candidate occupancy;
+2. compute missing material (`target - candidate`) and excess material (`candidate - target`);
+3. split each class into connected components;
+4. record component volume, bounds, centroid and nearest intent feature;
+5. preserve this as evidence before any feature edit is proposed.
+
+License boundary: CADFit's published implementation is CC BY-NC 4.0 and the authors report a provisional patent. Mesh2CAD may independently test the general engineering idea, but implementation must not copy the reference code.
+
+### CADReasoner — multi-view discrepancy evidence
+
+A single score is insufficient for deciding what to edit. E2 should additionally emit six orthographic red/blue overlays and feature-linked mismatch measurements. The Apache-2.0 CADReasoner repository is a useful reference for representation and testing, but its trained VLM is not required for the first implementation.
+
+### Ortho2CAD — standardized capture beats unconstrained imagery
+
+Reference: [Ortho2CAD](https://arxiv.org/abs/2607.08891).
+
+Before pursuing a large image-to-CAD model, accept a small engineering-evidence bundle: rectified front/top/right views, known scale, locked dimensions, capture pose/range and explicit occlusion. The cross-repository interface is defined in [PlatypusOne Capture Contract](PLATYPUSONE_CAPTURE_CONTRACT.md).
+
+New experiment: import three controlled views of one bracket, lock its bounding dimensions and compare the result with a single-photo input.
+
+Large-compute boundary: reproducing Ortho2CAD's full learned system requires fine-tuning an 8B VLM on roughly 150,000 samples. That is not a current Mesh2CAD dependency.
+
+### CADBench — robustness and multi-metric evaluation
+
+Reference: [CADBench](https://arxiv.org/abs/2605.10873).
+
+Add a 12-part microbenchmark:
+
+- four clean mechanical meshes;
+- four deterministic noisy/decimated variants;
+- four cropped or missing-patch variants.
+
+Report volumetric IoU, surface alignment, Chamfer distance, valid-solid rate and operation count separately. Do not collapse them into a single marketing score.
+
+## Revised execution order
+
+1. Finish E1's real-mesh/OCC gate.
+2. Add positive/negative residual components and feature association to E2.
+3. Compare E3's contract with CADIR dependency graphs and geometric signatures.
+4. Establish the 12-part robustness microbenchmark.
+5. Test the PlatypusOne three-view evidence import.
+6. Add GUI discrepancy overlays only after the headless report is useful.
+
+The highest-value immediate test remains spatial residual decomposition because it converts the optimizer's scalar improvement into an actionable engineering correction.
