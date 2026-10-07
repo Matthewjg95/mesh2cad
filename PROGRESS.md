@@ -467,6 +467,23 @@ User goal: CNC-machinable CAD of the Tab5 backplate.
 - [x] tests/test_diagnostics.py. FULL SUITE 88/88.
 - Backplate bundle verified: 313 patches, all features, 1 solid 0.46%.
 
+### Sketch Asset Library (2026-10-07)
+- Builds on the unmerged sketch-asset stack (PR #7 import contract, #8
+  geometry validation, #9 strict V1 round trips; #7 merged into this branch).
+- [x] Schema 1.1 = 1.0 + `profiles` (closed line/arc loops, true arcs).
+  Assets without profiles still write 1.0; gaps > 1e-6 rejected, not closed.
+- [x] `library.py` — one `<key>.sketch.json` per asset, atomic writes,
+  no silent overwrite, malformed files reported; folder via arg / env /
+  `~/.mesh2cad/sketch_assets`. Name + tag search.
+- [x] DXF R12 (CIRCLE/ARC/LINE, $INSUNITS) and SVG (Y flip only in a group
+  transform, true-scale width/height, provenance in <metadata>).
+- [x] `cad.py` — asset -> plate solid (inch x25.4 logged), largest planar
+  face -> asset (lines/arcs only; B-splines rejected). GUI "Sketch Library"
+  dialog with SVG preview; CLI `python -m mra.sketch_assets`.
+- [x] 3 synthetic examples + demo; docs/SKETCH_ASSETS.md. FULL SUITE 149/149.
+- Env note: tests need cadquery-ocp < 8 (8.0 renamed TopoDS.Shell_s) and a
+  trimesh boolean backend (manifold3d) — neither pinned in requirements.
+
 ### NEXT STEP (future sessions)
 0a. PyInstaller single-folder .exe distribution (user wants a real
     executable; OCP+PySide6 bundling is finicky — budget a session).

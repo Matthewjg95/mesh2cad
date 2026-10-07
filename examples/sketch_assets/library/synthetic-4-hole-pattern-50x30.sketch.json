@@ -1,0 +1,58 @@
+{
+  "name": "Synthetic 4-hole pattern 50x30",
+  "units": "mm",
+  "origin": [
+    0.0,
+    0.0
+  ],
+  "circles": [
+    {
+      "center": [
+        -25.0,
+        -15.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        25.0,
+        -15.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        25.0,
+        15.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        -25.0,
+        15.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    }
+  ],
+  "polygons": [],
+  "metadata": {
+    "description": "SYNTHETIC EXAMPLE - illustrative round-number dimensions; does not describe any real product.",
+    "synthetic": true,
+    "tags": [
+      "synthetic-example",
+      "hole-pattern",
+      "mounting"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic-example",
+    "generator": "mra.sketch_assets.examples.mounting_hole_pattern",
+    "notice": "SYNTHETIC EXAMPLE - illustrative round-number dimensions; does not describe any real product."
+  },
+  "schema_version": "1.0"
+}

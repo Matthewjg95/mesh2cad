@@ -75,6 +75,7 @@ class MainWindow(QMainWindow):
         self._segmentation: SegmentationResult | None = None
         self._intent: IntentResult | None = None
         self._build: BuildResult | None = None
+        self._mesh_path: str | None = None
         self._worker_thread: QThread | None = None
 
         self._viewport = Viewport()
@@ -102,6 +103,7 @@ class MainWindow(QMainWindow):
         except (FileNotFoundError, ValueError) as exc:
             QMessageBox.critical(self, "Import failed", str(exc))
             return
+        self._mesh_path = path
         self._bodies = split_bodies(self._mesh)
         self._btn_isolate.setEnabled(len(self._bodies) > 1)
         self._segmentation = None
@@ -522,6 +524,68 @@ class MainWindow(QMainWindow):
                 message += f"  (+ hole schedule {schedule.name})"
         self.statusBar().showMessage(message)
 
+    # ---------------------------------------------------- sketch library
+
+    def open_sketch_library(self) -> None:
+        """Browse/save/load reusable 2D sketch assets."""
+        from mra.gui.sketch_library import SketchLibraryDialog
+
+        has_solid = self._build is not None and self._build.shape is not None
+        dialog = SketchLibraryDialog(
+            capture=self._capture_sketch_asset if has_solid else None,
+            load=self._load_sketch_asset,
+            parent=self,
+        )
+        dialog.exec()
+
+    def _capture_sketch_asset(self, name: str, tags: list[str]):
+        """Current solid's largest planar face -> SketchAsset (mm)."""
+        from mra.sketch_assets.cad import shape_to_asset
+
+        assert self._build is not None and self._build.shape is not None
+        provenance = {"source": "mesh2cad-workspace"}
+        if self._mesh_path:
+            provenance["source_file"] = Path(self._mesh_path).name
+        metadata = {"tags": tags} if tags else {}
+        return shape_to_asset(
+            self._build.shape, name, metadata=metadata, provenance=provenance
+        )
+
+    def _load_sketch_asset(self, asset) -> bool:
+        """Rebuild an asset as a plate solid ready for Validate/Export STEP."""
+        from PySide6.QtWidgets import QInputDialog
+        from mra.sketch_assets.cad import asset_to_plate
+
+        thickness, ok = QInputDialog.getDouble(
+            self, "Plate thickness",
+            f"Extrude '{asset.name}' to a plate of thickness (mm):",
+            3.0, 0.1, 100.0, 2,
+        )
+        if not ok:
+            return False
+        try:
+            plate = asset_to_plate(asset, thickness)
+        except ValueError as exc:
+            QMessageBox.critical(self, "Load sketch asset", str(exc))
+            return False
+        # The asset replaces the mesh workspace: no scan evidence, no
+        # recognised features, no hole schedule.
+        self._mesh = None
+        self._mesh_path = None
+        self._bodies = []
+        self._segmentation = None
+        self._intent = None
+        self._build = BuildResult(shape=plate.shape, log=list(plate.log))
+        for b in (self._btn_isolate, self._btn_repair, self._btn_recognize,
+                  self._btn_reconstruct, self._btn_sheet, self._btn_report):
+            b.setEnabled(False)
+        self._viewport.clear()
+        self._viewport.show_preview(shape_to_trimesh(plate.shape))
+        self._btn_validate.setEnabled(True)
+        self._btn_export.setEnabled(True)
+        self.statusBar().showMessage(" ".join(plate.log))
+        return True
+
     # ------------------------------------------------------------- build
 
     def _build_toolbar(self) -> None:
@@ -563,10 +627,15 @@ class MainWindow(QMainWindow):
             "Package this part + the tool's analysis into a zip you can "
             "attach to a GitHub issue (nothing is uploaded)"
         )
+        self._btn_sketches = _btn("Sketch Library", self.open_sketch_library)
+        self._btn_sketches.setToolTip(
+            "Save the current part's 2D footprint as a reusable sketch "
+            "asset, or load/export (DXF, SVG) assets from a local folder"
+        )
         for b in (self._btn_import, self._btn_isolate, self._btn_repair,
                   self._btn_recognize, self._btn_reconstruct,
                   self._btn_sheet, self._btn_validate, self._btn_export,
-                  self._btn_report):
+                  self._btn_report, self._btn_sketches):
             bar.addWidget(b)
 
 
