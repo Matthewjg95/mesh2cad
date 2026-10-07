@@ -49,6 +49,10 @@ and wrote a hole schedule telling the shop which holes serve which screws.
   STEP geometry cannot carry thread callouts).
 - **Sheet Version**: one click flattens any plate-class part to a
   laser/waterjet-cuttable sheet at your stock gauge.
+- **Sketch Library**: save a part's 2D footprint (true arcs and circles)
+  as a named, tagged asset in a local folder; browse with preview and
+  search; reload as a plate; export DXF / SVG. Headless core + CLI
+  (`python -m mra.sketch_assets`) — see [docs/SKETCH_ASSETS.md](docs/SKETCH_ASSETS.md).
 - **DFM cost model**: per-feature machining cost estimate (setups and CAM
   programming dominate one-offs, not cutting time) with quantity
   amortization.
@@ -96,6 +100,7 @@ mra/
   reconstruction/  Stage 5 — B-Rep building, bridges, fillets, sheet
   validation/      Stage 6 — solid health checks
   export/          Stage 7 — STEP writer + hole schedules
+  sketch_assets/   Portable 2D sketch assets: schema, library, DXF/SVG
   dfm.py           Machining cost model & simplification transforms
   gui/             PySide6 workbench (viewport, wizards, dialogs)
 ```
