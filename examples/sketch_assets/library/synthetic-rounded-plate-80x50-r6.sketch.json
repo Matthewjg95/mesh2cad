@@ -1,0 +1,232 @@
+{
+  "name": "Synthetic rounded plate 80x50 R6",
+  "units": "mm",
+  "origin": [
+    0.0,
+    0.0
+  ],
+  "circles": [
+    {
+      "center": [
+        34.0,
+        19.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        -34.0,
+        19.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        -34.0,
+        -19.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        34.0,
+        -19.0
+      ],
+      "diameter": 3.4,
+      "role": "mounting-hole"
+    }
+  ],
+  "polygons": [],
+  "metadata": {
+    "description": "SYNTHETIC EXAMPLE - illustrative round-number dimensions; does not describe any real product.",
+    "synthetic": true,
+    "tags": [
+      "synthetic-example",
+      "plate",
+      "rounded-rectangle"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic-example",
+    "generator": "mra.sketch_assets.examples.rounded_plate",
+    "notice": "SYNTHETIC EXAMPLE - illustrative round-number dimensions; does not describe any real product."
+  },
+  "schema_version": "1.1",
+  "profiles": [
+    {
+      "segments": [
+        {
+          "type": "line",
+          "start": [
+            40.0,
+            -19.0
+          ],
+          "end": [
+            40.0,
+            19.0
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            40.0,
+            19.0
+          ],
+          "end": [
+            34.0,
+            25.0
+          ],
+          "center": [
+            34.0,
+            19.0
+          ],
+          "ccw": true
+        },
+        {
+          "type": "line",
+          "start": [
+            34.0,
+            25.0
+          ],
+          "end": [
+            -34.0,
+            25.0
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            -34.0,
+            25.0
+          ],
+          "end": [
+            -40.0,
+            19.0
+          ],
+          "center": [
+            -34.0,
+            19.0
+          ],
+          "ccw": true
+        },
+        {
+          "type": "line",
+          "start": [
+            -40.0,
+            19.0
+          ],
+          "end": [
+            -40.0,
+            -19.0
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            -40.0,
+            -19.0
+          ],
+          "end": [
+            -34.0,
+            -25.0
+          ],
+          "center": [
+            -34.0,
+            -19.0
+          ],
+          "ccw": true
+        },
+        {
+          "type": "line",
+          "start": [
+            -34.0,
+            -25.0
+          ],
+          "end": [
+            34.0,
+            -25.0
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            34.0,
+            -25.0
+          ],
+          "end": [
+            40.0,
+            -19.0
+          ],
+          "center": [
+            34.0,
+            -19.0
+          ],
+          "ccw": true
+        }
+      ],
+      "role": "outline"
+    },
+    {
+      "segments": [
+        {
+          "type": "line",
+          "start": [
+            -7.0,
+            -3.0
+          ],
+          "end": [
+            7.0,
+            -3.0
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            7.0,
+            -3.0
+          ],
+          "end": [
+            7.0,
+            3.0
+          ],
+          "center": [
+            7.0,
+            0.0
+          ],
+          "ccw": true
+        },
+        {
+          "type": "line",
+          "start": [
+            7.0,
+            3.0
+          ],
+          "end": [
+            -7.0,
+            3.0
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            -7.0,
+            3.0
+          ],
+          "end": [
+            -7.0,
+            -3.0
+          ],
+          "center": [
+            -7.0,
+            0.0
+          ],
+          "ccw": true
+        }
+      ],
+      "role": "cutout"
+    }
+  ]
+}

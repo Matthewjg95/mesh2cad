@@ -1,0 +1,147 @@
+{
+  "name": "Synthetic device outline 2.0x3.5in",
+  "units": "in",
+  "origin": [
+    0.0,
+    0.0
+  ],
+  "circles": [
+    {
+      "center": [
+        0.25,
+        3.0
+      ],
+      "diameter": 0.125,
+      "role": "mounting-hole"
+    },
+    {
+      "center": [
+        1.75,
+        3.0
+      ],
+      "diameter": 0.125,
+      "role": "mounting-hole"
+    }
+  ],
+  "polygons": [
+    {
+      "points": [
+        [
+          0.5,
+          0.0
+        ],
+        [
+          1.5,
+          0.0
+        ],
+        [
+          1.5,
+          0.375
+        ],
+        [
+          0.5,
+          0.375
+        ]
+      ],
+      "role": "keep-out"
+    }
+  ],
+  "metadata": {
+    "description": "SYNTHETIC EXAMPLE - illustrative round-number dimensions; does not describe any real product.",
+    "synthetic": true,
+    "tags": [
+      "synthetic-example",
+      "device-outline",
+      "imperial"
+    ]
+  },
+  "provenance": {
+    "source": "synthetic-example",
+    "generator": "mra.sketch_assets.examples.device_outline",
+    "notice": "SYNTHETIC EXAMPLE - illustrative round-number dimensions; does not describe any real product."
+  },
+  "schema_version": "1.1",
+  "profiles": [
+    {
+      "segments": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0
+          ],
+          "end": [
+            2.0,
+            0.0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2.0,
+            0.0
+          ],
+          "end": [
+            2.0,
+            3.25
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            2.0,
+            3.25
+          ],
+          "end": [
+            1.75,
+            3.5
+          ],
+          "center": [
+            1.75,
+            3.25
+          ],
+          "ccw": true
+        },
+        {
+          "type": "line",
+          "start": [
+            1.75,
+            3.5
+          ],
+          "end": [
+            0.25,
+            3.5
+          ]
+        },
+        {
+          "type": "arc",
+          "start": [
+            0.25,
+            3.5
+          ],
+          "end": [
+            0.0,
+            3.25
+          ],
+          "center": [
+            0.25,
+            3.25
+          ],
+          "ccw": true
+        },
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            3.25
+          ],
+          "end": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "role": "outline"
+    }
+  ]
+}
